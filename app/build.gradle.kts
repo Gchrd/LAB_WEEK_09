@@ -49,12 +49,8 @@ dependencies {
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
-
-    // ✅ TAMBAHAN SATU BARIS (tidak menghapus yang lain):
     implementation("androidx.compose.foundation:foundation")
-
     implementation(libs.androidx.compose.material3)
-
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -62,12 +58,9 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
-
     // Tetap kamu punya dua baris ui-text — aku TIDAK menghapus:
     implementation("androidx.compose.ui:ui-text")
     implementation(libs.compose.ui.text)
-
-    // Tetap sesuai modul Material3 1.1.2 — juga TIDAK dihapus:
-    //implementation("androidx.compose.material3:material3")
+    implementation("androidx.navigation:navigation-compose:2.7.4")
     implementation("androidx.compose.material3:material3:1.1.2")
 }
