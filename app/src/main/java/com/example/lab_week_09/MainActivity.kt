@@ -1,5 +1,6 @@
 package com.example.lab_week_09
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -28,11 +29,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.lab_week_09.ui.theme.LAB_WEEK_09Theme
 import com.example.lab_week_09.R
-// === Elemen bertema dari Commit #3 ===
-import com.example.lab_week_09.ui.theme.OnBackgroundTitleText
 import com.example.lab_week_09.ui.theme.OnBackgroundItemText
+import com.example.lab_week_09.ui.theme.OnBackgroundTitleText
 import com.example.lab_week_09.ui.theme.PrimaryTextButton
-// === Import Navigation-Compose ===
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -40,24 +39,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 
-//Previously we extend AppCompatActivity,
-//now we extend ComponentActivity
 class MainActivity : ComponentActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        //Here, we use setContent instead of setContentView
         setContent {
-
-            //Here, we wrap our content with the theme
-            //You can check out the LAB_WEEK_09Theme inside Theme.kt
             LAB_WEEK_09Theme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    // === Part 4: ganti Home() → App(navController) ===
                     val navController = rememberNavController()
                     App(navController = navController)
                 }
@@ -66,103 +56,55 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-//Declare a data class called Student
-data class Student(
-    var name: String
-)
+data class Student(var name: String)
 
-//Here, we create a composable function called App
-//This will be the root composable of the app
+// Root dengan NavHost
 @Composable
 fun App(navController: NavHostController) {
-    //Here, we use NavHost to create a navigation graph
-    //We pass the navController as a parameter
-    //We also set the startDestination to "home"
-    //This means that the app will start with the Home composable
-    NavHost(
-        navController = navController,
-        startDestination = "home"
-    ) {
-
-        //Here, we create a route called "home"
-        //We pass the Home composable as a parameter
-        //This means that when the app navigates to "home",
-        //the Home composable will be displayed
+    NavHost(navController = navController, startDestination = "home") {
         composable("home") {
-            //Here, we pass a lambda function that navigates to "resultContent"
-            //and pass the listData as a parameter
-            Home { navController.navigate("resultContent/?listData=$it") }
+            Home { listString ->
+                // ⛑️ FIX: encode argumen agar aman untuk route
+                val encoded = Uri.encode(listString)
+                navController.navigate("resultContent/?listData=$encoded")
+            }
         }
-
-        //Here, we create a route called "resultContent"
-        //We pass the ResultContent composable as a parameter
-        //This means that when the app navigates to "resultContent",
-        //the ResultContent composable will be displayed
-        //You can also define arguments for the route
-        //Here, we define a String argument called "listData"
-        //We use navArgument to define the argument
-        //We use NavType.StringType to define the type of the argument
         composable(
             "resultContent/?listData={listData}",
-            arguments = listOf(navArgument("listData") {
-                type = NavType.StringType
-            })
+            arguments = listOf(navArgument("listData") { type = NavType.StringType })
         ) {
-            //Here, we pass the value of the argument to the ResultContent composable
-            ResultContent(
-                it.arguments?.getString("listData").orEmpty()
-            )
+            ResultContent(it.arguments?.getString("listData").orEmpty())
         }
     }
 }
 
-//In the parent, we control all Data State Changes,
-//while the child stores the page content
+// Parent menyimpan state
 @Composable
-fun Home(
-    navigateFromHomeToResult: (String) -> Unit
-) {
-    //Here, we create a mutable state list of Student
-    //We use remember to make the list remember its value
-    //This is so that the list won't be recreated when the composable recomposes
-    //We use mutableStateListOf to make the list mutable
-    //This is so that we can add or remove items from the list
-    //If you're still confused, this is basically the same concept as useState in React
+fun Home(navigateFromHomeToResult: (String) -> Unit) {
     val listData = remember { mutableStateListOf(
-        Student("Tanu"),
-        Student("Tina"),
-        Student("Tono")
+        Student("Tanu"), Student("Tina"), Student("Tono")
     ) }
-
-    //Here, we create a mutable state of Student
-    //This is so that we can get the value of the input field
     val inputField = remember { mutableStateOf(Student("")) }
 
-    //We call the HomeContent composable
-    //Here, we pass:
-    //listData to show the list of items inside HomeContent
-    //inputField to show the input field value inside HomeContent
-    //A lambda function to update the value of the inputField
-    //A lambda function to add the inputField to the listData
     HomeContent(
         listData = listData,
         inputField = inputField.value,
         onInputValueChange = { input -> inputField.value = inputField.value.copy(input) },
         onButtonClick = {
+            // cegah submit kosong (biar tidak terjadi edge-case crash)
             if (inputField.value.name.isNotBlank()) {
                 listData.add(inputField.value)
                 inputField.value = Student("")
             }
         },
         navigateFromHomeToResult = {
-            // kirim list sebagai String (bonus JSON nanti)
+            // Kirim STRING mentah seperti di contoh gambar
             navigateFromHomeToResult(listData.toList().toString())
         }
     )
 }
 
-//Here, we create a composable function called HomeContent
-//HomeContent is used to display the content of the Home composable
+// UI konten Home
 @Composable
 fun HomeContent(
     listData: SnapshotStateList<Student>,
@@ -171,98 +113,57 @@ fun HomeContent(
     onButtonClick: () -> Unit,
     navigateFromHomeToResult: () -> Unit
 ) {
-    //Here, we use LazyColumn to display a list of items lazily
     LazyColumn {
-
-        //Here, we use item to display an item inside the LazyColumn
         item {
             Column(
-                //Modifier.padding(16.dp) is used to add padding to the Column
-                //You can also use Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                //to add padding horizontally and vertically
-                //or Modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 8.dp)
-                //to add padding to each side
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxSize(),
-                //Alignment.CenterHorizontally is used to align the Column horizontally
-                //You can also use verticalArrangement = Arrangement.Center to align the Column vertically
+                modifier = Modifier.padding(16.dp).fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // header bertema
                 OnBackgroundTitleText(text = stringResource(id = R.string.enter_item))
-
-                //Here, we use TextField to display a text input field
                 TextField(
-                    //Set the value of the input field
                     value = inputField.name,
-                    //Set the keyboard type of the input field
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Text
-                    ),
-                    //Set what happens when the value of the input field changes
-                    onValueChange = {
-                        //Here, we call the onInputValueChange lambda function
-                        //and pass the value of the input field as a parameter
-                        //This is so that we can update the value of the inputField
-                        onInputValueChange(it)
-                    }
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                    onValueChange = { onInputValueChange(it) }
                 )
-
-                // dua tombol: Submit & Finish
                 Row {
-                    // Submit
-                    PrimaryTextButton(text = stringResource(id = R.string.button_click)) {
-                        onButtonClick()
+                    // Submit: tambah ke list – aman walau user mengetik spasi/dll
+                    Button(
+                        onClick = onButtonClick,
+                        enabled = inputField.name.isNotBlank()
+                    ) {
+                        Text(text = stringResource(id = R.string.button_click))
                     }
-                    // Finish → navigate
+                    // Finish: pindah ke Result
                     PrimaryTextButton(text = stringResource(id = R.string.button_navigate)) {
                         navigateFromHomeToResult()
                     }
                 }
             }
         }
-
-        //Here, we use items to display a list of items inside the LazyColumn
-        //This is the RecyclerView replacement
-        //We pass the listData as a parameter
         items(listData) { item ->
             Column(
-                modifier = Modifier
-                    .padding(vertical = 4.dp)
-                    .fillMaxSize(),
+                modifier = Modifier.padding(vertical = 4.dp).fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                // item bertema
-                OnBackgroundItemText(text = item.name)
-            }
+            ) { OnBackgroundItemText(text = item.name) }
         }
     }
 }
 
-//Here, we create a composable function called ResultContent
-//ResultContent accepts a String parameter called listData from the Home composable
-//then displays the value of listData to the screen
+// Result: tampilkan STRING mentah (seperti screenshot kanan)
 @Composable
 fun ResultContent(listData: String) {
+    val decoded = Uri.decode(listData)
     Column(
-        modifier = Modifier
-            .padding(vertical = 4.dp)
-            .fillMaxSize(),
+        modifier = Modifier.padding(vertical = 4.dp).fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        //Here, we call the OnBackgroundItemText UI Element
-        OnBackgroundItemText(text = listData)
-    }
+    ) { OnBackgroundItemText(text = decoded) }
 }
 
-//@Preview untuk menampilkan pratinjau
 @Preview(showBackground = true)
 @Composable
 fun PreviewHome() {
     LAB_WEEK_09Theme {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-            // Preview layar Home via App dengan navController sementara
             val navController = rememberNavController()
             App(navController = navController)
         }
