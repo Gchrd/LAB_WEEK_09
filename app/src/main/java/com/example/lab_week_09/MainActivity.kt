@@ -27,6 +27,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.lab_week_09.ui.theme.LAB_WEEK_09Theme
 import com.example.lab_week_09.R
+// === Tambahan import elemen bertema ===
+import com.example.lab_week_09.ui.theme.OnBackgroundTitleText
+import com.example.lab_week_09.ui.theme.OnBackgroundItemText
+import com.example.lab_week_09.ui.theme.PrimaryTextButton
 
 //Previously we extend AppCompatActivity,
 //now we extend ComponentActivity
@@ -124,7 +128,8 @@ fun HomeContent(
                 //You can also use verticalArrangement = Arrangement.Center to align the Column vertically
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = stringResource(id = R.string.enter_item))
+                // ganti header Text(...) → OnBackgroundTitleText(...)
+                OnBackgroundTitleText(text = stringResource(id = R.string.enter_item))
 
                 //Here, we use TextField to display a text input field
                 TextField(
@@ -143,16 +148,12 @@ fun HomeContent(
                     }
                 )
 
-                //Here, we use Button to display a button
-                //the onClick parameter is used to set what happens when the button is clicked
-                Button(onClick = {
+                // ganti Button(...) → PrimaryTextButton(...)
+                PrimaryTextButton(text = stringResource(id = R.string.button_click)) {
                     //Here, we call the onButtonClick lambda function
                     //This is so that we can add the inputField value to the listData
                     //and reset the value of the inputField
                     onButtonClick()
-                }) {
-                    //Set the text of the button
-                    Text(text = stringResource(id = R.string.button_click))
                 }
             }
         }
@@ -167,7 +168,8 @@ fun HomeContent(
                     .fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = item.name)
+                // ganti Text(item.name) → OnBackgroundItemText(item.name)
+                OnBackgroundItemText(text = item.name)
             }
         }
     }
