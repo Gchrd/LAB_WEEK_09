@@ -498,7 +498,7 @@ fun CVPreviewScreen(
             Text("← Back to Edit")
         }
         
-        Divider(modifier = Modifier.padding(vertical = 8.dp))
+        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
         
         // CV Preview Content
         Text(
@@ -540,7 +540,7 @@ fun CVPreviewScreen(
         
         if (cvData.personalInfo.summary.isNotEmpty()) {
             Spacer(modifier = Modifier.height(16.dp))
-            Divider()
+            HorizontalDivider()
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = "PROFESSIONAL SUMMARY",
@@ -553,7 +553,7 @@ fun CVPreviewScreen(
         
         if (cvData.education.isNotEmpty()) {
             Spacer(modifier = Modifier.height(16.dp))
-            Divider()
+            HorizontalDivider()
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = "EDUCATION",
@@ -590,7 +590,7 @@ fun CVPreviewScreen(
         
         if (cvData.experience.isNotEmpty()) {
             Spacer(modifier = Modifier.height(16.dp))
-            Divider()
+            HorizontalDivider()
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = "WORK EXPERIENCE",
@@ -629,7 +629,7 @@ fun CVPreviewScreen(
         
         if (cvData.skills.isNotEmpty()) {
             Spacer(modifier = Modifier.height(16.dp))
-            Divider()
+            HorizontalDivider()
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = "SKILLS",
