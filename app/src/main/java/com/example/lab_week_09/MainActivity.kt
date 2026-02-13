@@ -42,7 +42,38 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun App(navController: NavHostController) {
-    val cvData = remember { mutableStateOf(CVData()) }
+    val cvData = remember { 
+        mutableStateOf(CVData(
+            personalInfo = PersonalInfo(
+                name = "Richard Giansanto",
+                email = "richard.giansanto@example.com",
+                phone = "+1 234 567 8900",
+                address = "Jakarta, Indonesia",
+                summary = "Passionate developer with expertise in mobile application development using Android and Jetpack Compose. Building modern user interfaces with focus on user experience."
+            ),
+            education = mutableListOf(
+                Education(
+                    degree = "Bachelor of Computer Science",
+                    institution = "University Name",
+                    year = "2020-2024",
+                    gpa = "3.8"
+                )
+            ),
+            experience = mutableListOf(
+                Experience(
+                    position = "Android Developer",
+                    company = "Tech Company",
+                    duration = "2023-Present",
+                    description = "Developing mobile applications using Jetpack Compose and Kotlin"
+                )
+            ),
+            skills = mutableListOf(
+                Skill(name = "Kotlin", level = "Advanced"),
+                Skill(name = "Jetpack Compose", level = "Intermediate"),
+                Skill(name = "Android Development", level = "Advanced")
+            )
+        ))
+    }
     
     NavHost(navController = navController, startDestination = "home") {
         composable("home") {
